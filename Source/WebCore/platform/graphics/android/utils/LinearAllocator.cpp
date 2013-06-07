@@ -44,14 +44,7 @@ namespace WebCore {
 // Must be smaller than INITIAL_PAGE_SIZE
 #define MAX_WASTE_SIZE ((size_t)1024)
 
-#if CPU(MIPS)
-#define ALIGN_SZ (sizeof(double))
-#else
-#define ALIGN_SZ (sizeof(int))
-#endif
-
-#define ALIGN(x) ((x + ALIGN_SZ - 1 ) & ~(ALIGN_SZ - 1))
-#define ALIGN_PTR(p) ((void*)(ALIGN((unsigned int)p)))
+#define ALIGN(x) (x + (x % sizeof(int)))
 
 #if LOG_NDEBUG
 #define ADD_ALLOCATION(size)
@@ -130,7 +123,7 @@ LinearAllocator::~LinearAllocator(void)
 
 void* LinearAllocator::start(Page* p)
 {
-    return ALIGN_PTR(((char*)p) + sizeof(Page));
+    return ((char*)p) + sizeof(Page);
 }
 
 void* LinearAllocator::end(Page* p)
@@ -185,7 +178,6 @@ void* LinearAllocator::alloc(size_t size)
 void LinearAllocator::rewindIfLastAlloc(void* ptr, size_t allocSize)
 {
     // Don't bother rewinding across pages
-    allocSize = ALIGN(allocSize);
     if (ptr >= start(m_currentPage) && ptr < end(m_currentPage)
             && ptr == ((char*)m_next - allocSize)) {
         m_totalAllocated -= allocSize;
@@ -196,7 +188,7 @@ void LinearAllocator::rewindIfLastAlloc(void* ptr, size_t allocSize)
 
 LinearAllocator::Page* LinearAllocator::newPage(size_t pageSize)
 {
-    pageSize = ALIGN(pageSize + sizeof(LinearAllocator::Page));
+    pageSize += sizeof(LinearAllocator::Page);
     ADD_ALLOCATION(pageSize);
     m_totalAllocated += pageSize;
     m_pageCount++;

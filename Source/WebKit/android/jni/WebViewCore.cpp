@@ -427,7 +427,6 @@ WebViewCore::WebViewCore(JNIEnv* env, jobject javaWebViewCore, WebCore::Frame* m
     , m_maxYScroll(240/4)
     , m_scrollOffsetX(0)
     , m_scrollOffsetY(0)
-    , m_scrollSetTime(0)
     , m_mousePos(WebCore::IntPoint(0,0))
     , m_screenWidth(320)
     , m_screenHeight(240)
@@ -568,7 +567,6 @@ WebViewCore::~WebViewCore()
         m_javaGlue->m_obj = 0;
     }
     delete m_javaGlue;
-    delete m_textFieldInitDataGlue;
 }
 
 WebViewCore* WebViewCore::getWebViewCore(const WebCore::FrameView* view)

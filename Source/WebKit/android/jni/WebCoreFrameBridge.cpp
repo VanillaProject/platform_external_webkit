@@ -1103,9 +1103,7 @@ static void CreateFrame(JNIEnv* env, jobject obj, jobject javaview, jobject jAss
     pageClients.contextMenuClient = new ContextMenuClientAndroid;
     pageClients.editorClient = editorC;
     pageClients.dragClient = new DragClientAndroid;
-#if ENABLE(INSPECTOR)
     pageClients.inspectorClient = new InspectorClientAndroid;
-#endif
     pageClients.deviceMotionClient = deviceMotionC;
     pageClients.deviceOrientationClient = deviceOrientationC;
     pageClients.geolocationClient = geolocationC;
@@ -1904,7 +1902,7 @@ static void SslClientCertPKCS8(JNIEnv *env, jobject obj, int handle, jbyteArray 
     client->sslClientCert(privateKey.release(), certificate);
 }
 
-static void SslClientCertCtx(JNIEnv *env, jobject obj, int handle, jlong ctx, jobjectArray chain)
+static void SslClientCertCtx(JNIEnv *env, jobject obj, int handle, jint ctx, jobjectArray chain)
 {
     WebUrlLoaderClient* client = reinterpret_cast<WebUrlLoaderClient*>(handle);
     EVP_PKEY* pkey = reinterpret_cast<EVP_PKEY*>(static_cast<uintptr_t>(ctx));
@@ -1979,7 +1977,7 @@ static JNINativeMethod gBrowserFrameNativeMethods[] = {
         (void*) SslCertErrorProceed },
     { "nativeSslCertErrorCancel", "(II)V",
         (void*) SslCertErrorCancel },
-    { "nativeSslClientCert", "(IJ[[B)V",
+    { "nativeSslClientCert", "(II[[B)V",
         (void*) SslClientCertCtx },
     { "nativeSslClientCert", "(I[B[[B)V",
         (void*) SslClientCertPKCS8 },
